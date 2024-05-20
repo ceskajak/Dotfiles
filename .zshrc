@@ -98,15 +98,8 @@ source $ZSH/oh-my-zsh.sh
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 alias vim='gvim -v'
+alias sunrise='ssh -AYCt ceskajak@sunrise.fjfi.cvut.cz'
 alias star='ssh -AYCt ceskajak@sssh.sdcc.bnl.gov'
 alias star_node='f(){ssh -AYCt ceskajak@sssh.sdcc.bnl.gov ssh rcas"$@";}; f'
 alias eic='ssh -AYCt ceska@sssh.sdcc.bnl.gov'
 
-# Base16 Shell
-BASE16_SHELL="$HOME/.config/base16-shell/"
-[ -n "$PS1" ] && \
-	[ -s "$BASE16_SHELL/profile_helper.sh" ] && \
-		eval "$("$BASE16_SHELL/profile_helper.sh")"
-
-autoload -U +X bashcompinit && bashcompinit
-omplete -o nospace -C /usr/._local/7zfpbxj5zmwhnqugzup5wjuwuwca4flw/bin/mc mc
