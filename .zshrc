@@ -8,7 +8,7 @@ export ZSH="/home/jakub/.oh-my-zsh"
 # load a random theme each time oh-my-zsh is loaded, in which case,
 # to know which specific one was loaded, run: echo $RANDOM_THEME
 # See https://github.com/ohmyzsh/ohmyzsh/wiki/Themes
-ZSH_THEME="minimal"
+ZSH_THEME="fishy"
 
 # Set list of themes to pick from when loading at random
 # Setting this variable when ZSH_THEME=random will cause zsh to load
@@ -68,7 +68,9 @@ ZSH_THEME="minimal"
 # Custom plugins may be added to $ZSH_CUSTOM/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git dnf zsh-autosuggestions zsh-syntax-highlighting)
+source ~/.zsh/catppuccin_frappe-zsh-syntax-highlighting.zsh
+
+plugins=(git dnf zsh-autosuggestions fast-syntax-highlighting)
 
 source $ZSH/oh-my-zsh.sh
 
@@ -102,4 +104,4 @@ alias sunrise='ssh -AYCt ceskajak@sunrise.fjfi.cvut.cz'
 alias star='ssh -AYCt ceskajak@sssh.sdcc.bnl.gov'
 alias star_node='f(){ssh -AYCt ceskajak@sssh.sdcc.bnl.gov ssh rcas"$@";}; f'
 alias eic='ssh -AYCt ceska@sssh.sdcc.bnl.gov'
-
+alias pi='ssh -AYCt pi'

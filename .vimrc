@@ -1,9 +1,11 @@
 set nocompatible
+set termguicolors
 
-colorscheme iceberg
+" set colorscheme
+colorscheme catppuccin_frappe
 
-set background=dark
-set t_Co=256
+" set transparent background
+autocmd vimenter * hi Normal guibg=NONE ctermbg=NONE
 
 filetype indent plugin on
 
@@ -13,7 +15,6 @@ set rtp+=~/.vim/bundle/Vundle.vim
 call vundle#begin()
 
 Plugin 'chriskempson/base16-vim'
-Plugin 'cocopon/iceberg.vim'
 
 call vundle#end()
 filetype plugin indent on
