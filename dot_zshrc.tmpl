@@ -1,0 +1,47 @@
+# ~/.zshrc — managed by chezmoi.
+# host {{ .chezmoi.hostname }} · role {{ .role }} · wm {{ .wm }} · os {{ .chezmoi.osRelease.id }}
+#
+# NOTE (2026-07-16, NON-FINAL): plugins/themes are runtime-guarded so a missing
+# one is skipped instead of erroring. Nothing here installs anything. Proper
+# theme/plugin choices + the bootstrapper are deferred — see [[dotfiles]].
+# Deferred/known-missing on some machines: fast-syntax-highlighting (akvarium),
+# catppuccin fsh theme (akvarium), tmux tpm (ocean, akvarium).
+
+export ZSH="$HOME/.oh-my-zsh"
+ZSH_THEME="fishy"
+
+# syntax-highlighting theme — load only if present
+[ -f ~/.zsh/catppuccin_frappe-zsh-syntax-highlighting.zsh ] && source ~/.zsh/catppuccin_frappe-zsh-syntax-highlighting.zsh
+
+# plugins — start minimal, append only the custom ones actually installed
+plugins=(git{{ if eq .chezmoi.osRelease.id "fedora" }} dnf{{ end }})
+ZSHC=${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}
+[ -d $ZSHC/plugins/zsh-autosuggestions ]      && plugins+=(zsh-autosuggestions)
+[ -d $ZSHC/plugins/fast-syntax-highlighting ] && plugins+=(fast-syntax-highlighting)
+
+source $ZSH/oh-my-zsh.sh
+
+export EDITOR='vim'
+
+# user binaries on PATH — all machines
+export PATH="$HOME/.local/bin:$PATH"
+
+# editor alias — whichever is installed
+if command -v nvim >/dev/null; then alias vim='nvim'
+elif command -v gvim >/dev/null; then alias vim='gvim -v'
+fi
+
+# personal SSH aliases
+alias sunrise='ssh -AYCt ceskajak@sunrise.fjfi.cvut.cz'
+alias star='ssh -AYCt ceskajak@sssh.sdcc.bnl.gov'
+alias star_node='f(){ssh -AYCt ceskajak@sssh.sdcc.bnl.gov ssh rcas"$@";}; f'
+alias eic='ssh -AYCt ceska@sssh.sdcc.bnl.gov'
+alias pi='ssh -AYCt pi'
+{{ if eq .role "workstation" }}
+# --- workstation-only ({{ .chezmoi.hostname }}), each guarded ---
+[ -f ~/.openclaw/completions/openclaw.zsh ] && source ~/.openclaw/completions/openclaw.zsh
+[ -x /home/linuxbrew/.linuxbrew/bin/brew ]  && eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv zsh)"
+[ -d ~/.opencode/bin ] && export PATH="$HOME/.opencode/bin:$PATH"
+{{ end }}
+# per-machine overrides (not tracked)
+[ -f ~/.zshrc.local ] && source ~/.zshrc.local

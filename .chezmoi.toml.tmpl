@@ -1,0 +1,15 @@
+{{- $hostname := .chezmoi.hostname -}}
+{{- $roles := dict "ocean" "workstation" "akvarium" "client" "rybnik" "client" "kapka" "client" "pramen" "node" -}}
+{{- $wms := dict "ocean" "gnome" "akvarium" "gnome" "rybnik" "gnome" "kapka" "i3" "pramen" "none" -}}
+{{- $role := "" -}}
+{{- $wm := "" -}}
+{{- if hasKey $roles $hostname -}}
+{{-   $role = get $roles $hostname -}}
+{{-   $wm = get $wms $hostname -}}
+{{- else -}}
+{{-   $role = promptStringOnce . "role" "Machine role (workstation/client/node)" -}}
+{{-   $wm = promptStringOnce . "wm" "Window manager (gnome/i3/none)" -}}
+{{- end -}}
+[data]
+    role = {{ $role | quote }}
+    wm   = {{ $wm | quote }}
