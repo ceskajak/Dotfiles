@@ -4,18 +4,15 @@
 " plain vimscript — compatible with both vim and nvim via the init.vim
 " bridge). Kept commented-out on wm=none (pramen, headless/SSH-only —
 " preserving its pre-existing deliberate opt-out). See vault [[dotfiles]].
+"
+" NOTE: colorscheme/theming must come AFTER the Vundle block below — it's
+" catppuccin/vim's `colors/` dir that Vundle adds to the runtimepath, so
+" the colorscheme command can't resolve until after `vundle#end()`. (Bug
+" found & fixed 2026-07-16 — the original file had this ordering only
+" because its colorscheme file was manually dropped into ~/.vim/colors/,
+" not Vundle-managed, so order didn't matter there.)
 set nocompatible
 set termguicolors
-
-{{ if eq .wm "none" -}}
-" colorscheme disabled here — headless node, opted out deliberately
-" colorscheme catppuccin_macchiato
-{{ else -}}
-colorscheme catppuccin_macchiato
-
-" transparent background
-autocmd vimenter * hi Normal guibg=NONE ctermbg=NONE
-{{ end -}}
 
 filetype indent plugin on
 syntax on
@@ -28,6 +25,16 @@ Plugin 'catppuccin/vim'
 
 call vundle#end()
 filetype plugin indent on
+
+{{ if eq .wm "none" -}}
+" colorscheme disabled here — headless node, opted out deliberately
+" colorscheme catppuccin_macchiato
+{{ else -}}
+colorscheme catppuccin_macchiato
+
+" transparent background
+autocmd vimenter * hi Normal guibg=NONE ctermbg=NONE
+{{ end -}}
 
 set number
 set relativenumber
