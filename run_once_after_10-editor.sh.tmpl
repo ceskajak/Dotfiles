@@ -1,0 +1,22 @@
+#!/bin/bash
+# Editor setup — chezmoi-managed, run_once (content-hash tracked).
+# Decided 2026-07-16: nvim everywhere except pramen (node, stays on vim —
+# already current there, keeps the constrained Pi light). gvim retired
+# fleet-wide (nvim's termguicolors replaces what it was kept for).
+set -e
+{{ if eq .wm "none" -}}
+echo "node role: vim only, nothing to install"
+{{- else -}}
+if ! command -v nvim >/dev/null 2>&1; then
+{{   if eq .chezmoi.osRelease.id "fedora" -}}
+  sudo dnf install -y neovim
+{{   else -}}
+  sudo apt-get update && sudo apt-get install -y neovim
+{{   end -}}
+fi
+{{   if eq .chezmoi.osRelease.id "fedora" -}}
+if rpm -q vim-X11 >/dev/null 2>&1; then
+  sudo dnf remove -y vim-X11
+fi
+{{   end -}}
+{{ end -}}
