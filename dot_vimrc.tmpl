@@ -1,0 +1,33 @@
+" ~/.vimrc — managed by chezmoi.
+" host {{ .chezmoi.hostname }} · role {{ .role }} · wm {{ .wm }}
+" Colorscheme decided 2026-07-16: Catppuccin Macchiato (catppuccin/vim,
+" plain vimscript — compatible with both vim and nvim via the init.vim
+" bridge). Kept commented-out on wm=none (pramen, headless/SSH-only —
+" preserving its pre-existing deliberate opt-out). See vault [[dotfiles]].
+set nocompatible
+set termguicolors
+
+{{ if eq .wm "none" -}}
+" colorscheme disabled here — headless node, opted out deliberately
+" colorscheme catppuccin_macchiato
+{{ else -}}
+colorscheme catppuccin_macchiato
+
+" transparent background
+autocmd vimenter * hi Normal guibg=NONE ctermbg=NONE
+{{ end -}}
+
+filetype indent plugin on
+syntax on
+
+set rtp+=~/.vim/bundle/Vundle.vim
+call vundle#begin()
+
+Plugin 'chriskempson/base16-vim'
+Plugin 'catppuccin/vim'
+
+call vundle#end()
+filetype plugin indent on
+
+set number
+set relativenumber
