@@ -1,0 +1,3 @@
+{{ if eq .wm "none" }}
+.config/nvim/init.vim
+{{ end }}
