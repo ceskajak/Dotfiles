@@ -1,0 +1,21 @@
+#!/bin/bash
+# zsh + oh-my-zsh — base shell scaffold, fleet-wide (all roles/OSes).
+# Sets zsh as the login shell so dot_zshrc.tmpl actually gets used.
+set -e
+
+if ! command -v zsh >/dev/null 2>&1; then
+{{ if eq .chezmoi.osRelease.id "fedora" -}}
+  sudo dnf install -y zsh
+{{ else -}}
+  sudo apt-get update && sudo apt-get install -y zsh
+{{ end -}}
+fi
+
+if [ ! -d ~/.oh-my-zsh ]; then
+  git clone -q --depth 1 https://github.com/ohmyzsh/ohmyzsh.git ~/.oh-my-zsh
+fi
+
+ZSH_BIN="$(command -v zsh)"
+if [ "$SHELL" != "$ZSH_BIN" ]; then
+  chsh -s "$ZSH_BIN"
+fi

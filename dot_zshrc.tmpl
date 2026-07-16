@@ -1,9 +1,11 @@
 # ~/.zshrc — managed by chezmoi.
 # host {{ .chezmoi.hostname }} · role {{ .role }} · wm {{ .wm }} · os {{ .chezmoi.osRelease.id }}
 #
-# NOTE (2026-07-16, NON-FINAL): plugins/themes are runtime-guarded so a missing
-# one is skipped instead of erroring. Nothing here installs anything. Proper
-# theme/plugin choices + the bootstrapper are deferred — see [[dotfiles]].
+# NOTE (2026-07-17): syntax-highlighting theme decided — Catppuccin Macchiato
+# + pink accent (dot_zsh/catppuccin_macchiato-zsh-syntax-highlighting.zsh),
+# matching the fleet-wide flavor already used by vim/nvim, tmux, i3, GNOME.
+# ZSH_THEME (prompt) is still the one open item (drift: fishy vs minimal).
+# Plugins are runtime-guarded so a missing one is skipped instead of erroring.
 # Deferred/known-missing on some machines: fast-syntax-highlighting (akvarium),
 # catppuccin fsh theme (akvarium), tmux tpm (ocean, akvarium).
 
@@ -11,7 +13,7 @@ export ZSH="$HOME/.oh-my-zsh"
 ZSH_THEME="fishy"
 
 # syntax-highlighting theme — load only if present
-[ -f ~/.zsh/catppuccin_frappe-zsh-syntax-highlighting.zsh ] && source ~/.zsh/catppuccin_frappe-zsh-syntax-highlighting.zsh
+[ -f ~/.zsh/catppuccin_macchiato-zsh-syntax-highlighting.zsh ] && source ~/.zsh/catppuccin_macchiato-zsh-syntax-highlighting.zsh
 
 # plugins — start minimal, append only the custom ones actually installed
 plugins=(git{{ if eq .chezmoi.osRelease.id "fedora" }} dnf{{ end }})
@@ -21,15 +23,19 @@ ZSHC=${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}
 
 source $ZSH/oh-my-zsh.sh
 
-export EDITOR='vim'
-
 # user binaries on PATH — all machines
 export PATH="$HOME/.local/bin:$PATH"
 
-# editor alias — whichever is installed
-if command -v nvim >/dev/null; then alias vim='nvim'
-elif command -v gvim >/dev/null; then alias vim='gvim -v'
+# default editor — resolved to the real binary (not just an alias) so
+# non-interactive invocations (git, sudoedit, systemctl edit, ...) get the
+# right one too; aliases only apply in interactive shells.
+if command -v nvim >/dev/null 2>&1; then
+  export EDITOR='nvim'
+  alias vim='nvim'
+elif command -v vim >/dev/null 2>&1; then
+  export EDITOR='vim'
 fi
+export VISUAL="$EDITOR"
 
 # personal SSH aliases
 alias sunrise='ssh -AYCt ceskajak@sunrise.fjfi.cvut.cz'

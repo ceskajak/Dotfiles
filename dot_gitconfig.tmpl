@@ -1,0 +1,10 @@
+# ~/.gitconfig — managed by chezmoi.
+# core.editor matches the fleet editor decision (2026-07-16): nvim everywhere
+# except pramen (node, stays on vim). See [[dotfiles]].
+[credential]
+	helper = store
+[user]
+	email = jceska1@gmail.com
+	name = jakub Ceska
+[core]
+	editor = {{ if eq .wm "none" }}vim{{ else }}nvim{{ end }}
