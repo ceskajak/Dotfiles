@@ -44,13 +44,17 @@ SMARTCTL = find_smartctl()
 
 
 def list_disks():
-    out = run(["lsblk", "-d", "-n", "-o", "NAME,TYPE"]).stdout
+    out = run(["lsblk", "-d", "-n", "-o", "NAME,TYPE,SIZE"]).stdout
     skip_prefixes = ("zram", "loop", "sr")
-    return [
-        parts[0] for line in out.splitlines()
-        if (parts := line.split()) and len(parts) >= 2 and parts[1] == "disk"
-        and not parts[0].startswith(skip_prefixes)
-    ]
+    disks = []
+    for line in out.splitlines():
+        parts = line.split()
+        if len(parts) < 3 or parts[1] != "disk" or parts[0].startswith(skip_prefixes):
+            continue
+        if parts[2] in ("0B", "0"):
+            continue  # empty card-reader slots etc — no media present, nothing to check
+        disks.append(parts[0])
+    return disks
 
 
 def parse_smart(dev, text):
