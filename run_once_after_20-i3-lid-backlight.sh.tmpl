@@ -1,0 +1,29 @@
+#!/bin/bash
+# i3/X doesn't power off the internal panel on lid close (GNOME/Wayland does
+# this automatically) — fixed via acpid toggling the backlight. Implemented
+# & verified working on kapka 2026-07-16. Improvement over the original
+# manual version: detects the actual backlight device instead of hardcoding
+# intel_backlight, so it no-ops cleanly on a desktop or non-Intel GPU.
+set -e
+{{ if eq .wm "i3" -}}
+if ! rpm -q acpid >/dev/null 2>&1; then
+  sudo dnf install -y acpid
+fi
+sudo mkdir -p /etc/acpi/events
+sudo tee /etc/acpi/events/lid >/dev/null <<'EOF'
+event=button/lid.*
+action=/etc/acpi/lid-backlight.sh
+EOF
+sudo tee /etc/acpi/lid-backlight.sh >/dev/null <<'EOF'
+#!/bin/sh
+BL=$(ls /sys/class/backlight 2>/dev/null | head -1)
+[ -z "$BL" ] && exit 0
+if grep -q closed /proc/acpi/button/lid/*/state 2>/dev/null; then
+  echo 1 > "/sys/class/backlight/$BL/bl_power"
+else
+  echo 0 > "/sys/class/backlight/$BL/bl_power"
+fi
+EOF
+sudo chmod +x /etc/acpi/lid-backlight.sh
+sudo systemctl enable --now acpid
+{{ end -}}

@@ -1,0 +1,15 @@
+#!/bin/bash
+# GDM greeter idle-suspend fix — root cause of the fleet's "on but
+# unreachable" symptom (a machine idling at the login screen suspended
+# after ~20min, dropping the network). wm=gnome only — applies to ocean
+# TOO, not just clients (this is role-independent, GDM-specific).
+# LightDM (kapka) doesn't idle-suspend by default, so it needs nothing here.
+set -e
+{{ if eq .wm "gnome" -}}
+sudo mkdir -p /etc/dconf/db/gdm.d
+sudo tee /etc/dconf/db/gdm.d/02-no-idle-suspend >/dev/null <<'EOF'
+[org/gnome/settings-daemon/plugins/power]
+sleep-inactive-ac-type='nothing'
+EOF
+sudo dconf update
+{{ end -}}

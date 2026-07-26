@@ -1,0 +1,14 @@
+#!/bin/bash
+# Client power/reachability policy — decided & verified fleet-wide 2026-07-16:
+# lid closed on AC should lock, not suspend, so the machine stays reachable.
+# role=client only (ocean is lidless; pramen headless — neither applies).
+set -e
+{{ if eq .role "client" -}}
+sudo mkdir -p /etc/systemd/logind.conf.d
+sudo tee /etc/systemd/logind.conf.d/10-lid.conf >/dev/null <<'EOF'
+[Login]
+HandleLidSwitch=lock
+HandleLidSwitchExternalPower=lock
+EOF
+sudo systemctl restart systemd-logind
+{{ end -}}

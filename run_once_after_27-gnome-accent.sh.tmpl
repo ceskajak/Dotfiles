@@ -1,0 +1,11 @@
+#!/bin/bash
+# GNOME native accent color — decided 2026-07-16: pink. This is the native
+# libadwaita accent mechanism, not a third-party theme — matches the
+# originally-described "Adwaita dark with pink highlights" look directly,
+# with none of the risk of the archived catppuccin/gtk project. wm=gnome
+# only (kapka is i3, pramen headless — neither has this schema).
+set -e
+{{ if eq .wm "gnome" -}}
+gsettings set org.gnome.desktop.interface accent-color pink
+gsettings set org.gnome.desktop.interface color-scheme prefer-dark
+{{ end -}}

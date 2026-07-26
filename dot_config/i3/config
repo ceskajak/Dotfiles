@@ -1,3 +1,9 @@
+# ~/.config/i3/config — managed by chezmoi.
+# Colorscheme decided 2026-07-16: Catppuccin Macchiato (base/mantle/surface/
+# text/pink/mauve/red/maroon hex values from the official catppuccin/palette
+# repo). Everything else (keybindings, exec lines, gaps, the machine-specific
+# xinput/touchpad line) is kapka's original config, untouched. See [[dotfiles]].
+
 # i3 config file (v4)
 #
 # Please see https://i3wm.org/docs/userguide.html for a complete reference!
@@ -20,13 +26,13 @@ exec --no-startup-id nitrogen --restore
 exec --no-startup-id dex-autostart --autostart --environment i3
 
 # class                 border  bground text    indicator child_border
-client.focused          #83CAFA #51A2DA #FFFFFF #83CAFA   #51A2DA
-client.focused_inactive #8C8C8C #4C4C4C #FFFFFF #4C4C4C   #8C8C8C
-client.unfocused        #4C4C4C #222222 #888888 #292D2E   #222222
-client.urgent           #EC69A0 #DB3279 #FFFFFF #DB3279   #DB3279
-client.placeholder      #000000 #0C0C0C #FFFFFF #000000   #0C0C0C
+client.focused          #f5bde6 #c6a0f6 #24273a #f5bde6   #c6a0f6
+client.focused_inactive #5b6078 #494d64 #cad3f5 #5b6078   #494d64
+client.unfocused        #363a4f #1e2030 #a5adcb #363a4f   #1e2030
+client.urgent           #ed8796 #ee99a0 #24273a #ed8796   #ee99a0
+client.placeholder      #24273a #1e2030 #cad3f5 #24273a   #1e2030
 
-client.background       #FFFFFF
+client.background       #24273a
 
 # This font is widely installed, provides lots of unicode glyphs, right-to-left
 # text rendering and scalability on retina/hidpi displays (thanks to pango).
@@ -231,28 +237,28 @@ mode "resize" {
 bindsym Mod4+r mode "resize"
 
 # class                 border  bground text    indicator child_border
-client.focused          #83CAFA #51A2DA #FFFFFF #83CAFA   #51A2DA
-client.focused_inactive #8C8C8C #4C4C4C #FFFFFF #4C4C4C   #8C8C8C
-client.unfocused        #4C4C4C #222222 #888888 #292D2E   #222222
-client.urgent           #EC69A0 #DB3279 #FFFFFF #DB3279   #DB3279
-client.placeholder      #000000 #0C0C0C #FFFFFF #000000   #0C0C0C
+client.focused          #f5bde6 #c6a0f6 #24273a #f5bde6   #c6a0f6
+client.focused_inactive #5b6078 #494d64 #cad3f5 #5b6078   #494d64
+client.unfocused        #363a4f #1e2030 #a5adcb #363a4f   #1e2030
+client.urgent           #ed8796 #ee99a0 #24273a #ed8796   #ee99a0
+client.placeholder      #24273a #1e2030 #cad3f5 #24273a   #1e2030
 
-client.background       #000000
+client.background       #24273a
 
 # Start i3bar to display a workspace bar (plus the system information i3status
 # finds out, if available)
 
 bar {
   colors {
-    background #000000
-    statusline #FFFFFF
-    separator  #666666
+    background #1e2030
+    statusline #cad3f5
+    separator  #5b6078
 
-    focused_workspace  #83CAFA #51A2DA #FFFFFF
-    active_workspace   #3C6EB4 #294172 #FFFFFF
-    inactive_workspace #8C8C8C #4C4C4C #888888
-    urgent_workspace   #EC69A0 #DB3279 #FFFFFF
-    binding_mode       #b691d3 #A07CBC #FFFFFF
+    focused_workspace  #f5bde6 #c6a0f6 #24273a
+    active_workspace   #494d64 #363a4f #cad3f5
+    inactive_workspace #5b6078 #494d64 #a5adcb
+    urgent_workspace   #ed8796 #ee99a0 #24273a
+    binding_mode       #c6a0f6 #5b6078 #24273a
   }
   status_command i3status -c /home/$USER/.config/i3status/i3status.conf
 }
