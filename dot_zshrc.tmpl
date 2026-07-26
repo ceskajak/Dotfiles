@@ -1,10 +1,11 @@
 # ~/.zshrc — managed by chezmoi.
 # host {{ .chezmoi.hostname }} · role {{ .role }} · wm {{ .wm }} · os {{ .chezmoi.osRelease.id }}
 #
-# NOTE (2026-07-17): syntax-highlighting theme decided — Catppuccin Macchiato
-# + pink accent (dot_zsh/catppuccin_macchiato-zsh-syntax-highlighting.zsh),
-# matching the fleet-wide flavor already used by vim/nvim, tmux, i3, GNOME.
-# ZSH_THEME (prompt) is still the one open item (drift: fishy vs minimal).
+# NOTE (2026-07-26): all theme decisions now final. Syntax-highlighting is
+# Catppuccin Macchiato + pink accent (dot_zsh/catppuccin_macchiato-zsh-
+# syntax-highlighting.zsh), matching vim/nvim, tmux, i3, GNOME. ZSH_THEME
+# (the prompt) stays "fishy" — confirmed, not drift; minimal was considered
+# and declined.
 # Plugins are runtime-guarded so a missing one is skipped instead of erroring.
 # Deferred/known-missing on some machines: fast-syntax-highlighting (akvarium),
 # catppuccin fsh theme (akvarium), tmux tpm (ocean, akvarium).
