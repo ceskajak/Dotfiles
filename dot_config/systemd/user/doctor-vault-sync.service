@@ -1,0 +1,6 @@
+[Unit]
+Description=Pull latest doctor fleet health report from pramen into the vault
+
+[Service]
+Type=oneshot
+ExecStart=%h/.local/bin/doctor-vault-sync.sh

@@ -9,3 +9,8 @@
 .config/systemd/user/doctor-check.service
 .config/systemd/user/doctor-check.timer
 {{ end }}
+{{ if ne .role "workstation" }}
+.local/bin/doctor-vault-sync.sh
+.config/systemd/user/doctor-vault-sync.service
+.config/systemd/user/doctor-vault-sync.timer
+{{ end }}

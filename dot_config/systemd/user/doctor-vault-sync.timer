@@ -1,0 +1,9 @@
+[Unit]
+Description=Daily pull of the doctor fleet health report into the vault
+
+[Timer]
+OnCalendar=daily
+Persistent=true
+
+[Install]
+WantedBy=timers.target

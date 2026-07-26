@@ -1,0 +1,10 @@
+#!/bin/bash
+# [[doctor]] project — enables the daily pull of pramen's health report into
+# the vault. workstation role only (ocean) — the machine that owns the vault.
+# Persistent=true so a missed trigger (ocean was off/asleep) catches up on
+# next wake rather than waiting for the next scheduled day. Decided 2026-07-26.
+set -e
+{{ if eq .role "workstation" -}}
+systemctl --user daemon-reload
+systemctl --user enable --now doctor-vault-sync.timer
+{{ end -}}
