@@ -15,15 +15,29 @@ def run(cmd):
 
 
 def find_smartctl():
-    # sudo matches NOPASSWD rules against the exact path installed in the
-    # sudoers file (an absolute path) — invoking a bare "smartctl" and
-    # relying on sudo's own secure_path to resolve it does NOT reliably
-    # match that rule in practice (confirmed empirically on rybnik), so
-    # resolve the absolute path ourselves before ever calling sudo.
-    for candidate in ("/usr/sbin/smartctl", "/usr/bin/smartctl", "/usr/local/sbin/smartctl"):
+    # sudo matches NOPASSWD rules against the exact absolute path that was
+    # installed in the sudoers file — but which path that is varies by
+    # machine even for the same real binary: on usr-merged Fedora (/usr/sbin
+    # is a symlink to /usr/bin) the bootstrap script's plain-user `command -v`
+    # resolved it as /usr/bin/smartctl, while on Debian's non-merged pramen
+    # it's genuinely /usr/sbin/smartctl. `os.path.exists` can't tell which of
+    # two symlink-equivalent paths sudo will actually accept — both "exist,"
+    # only one matches sudo's rule text — so probe with a real sudo call and
+    # use whichever candidate sudo actually accepts as NOPASSWD.
+    candidates = ["/usr/bin/smartctl", "/usr/sbin/smartctl", "/usr/local/sbin/smartctl",
+                  "/usr/local/bin/smartctl"]
+    for candidate in candidates:
+        if not os.path.exists(candidate):
+            continue
+        r = run(["sudo", "-n", candidate, "--version"])
+        if r.returncode == 0 and "password is required" not in r.stderr and "Permission denied" not in r.stderr:
+            return candidate
+    # nothing matched a NOPASSWD rule — fall back to the first path that
+    # exists so at least the error message is informative, rather than "smartctl not found"
+    for candidate in candidates:
         if os.path.exists(candidate):
             return candidate
-    return "smartctl"  # last resort, will likely hit the password prompt
+    return "smartctl"
 
 
 SMARTCTL = find_smartctl()
