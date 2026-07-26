@@ -4,3 +4,8 @@
 {{ if ne .wm "i3" }}
 .config/i3/config
 {{ end }}
+{{ if ne .role "node" }}
+.local/bin/doctor-orchestrator.py
+.config/systemd/user/doctor-check.service
+.config/systemd/user/doctor-check.timer
+{{ end }}

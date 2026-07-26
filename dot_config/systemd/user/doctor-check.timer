@@ -1,0 +1,9 @@
+[Unit]
+Description=Hourly doctor reachability poll (actual per-host health checks are throttled internally to every 7 days when reachable)
+
+[Timer]
+OnCalendar=hourly
+Persistent=true
+
+[Install]
+WantedBy=timers.target

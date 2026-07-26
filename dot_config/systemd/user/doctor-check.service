@@ -1,0 +1,6 @@
+[Unit]
+Description=Doctor fleet drive health check (reachability-aware, throttled per-host)
+
+[Service]
+Type=oneshot
+ExecStart=%h/.local/bin/doctor-orchestrator.py

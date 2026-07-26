@@ -1,0 +1,11 @@
+#!/bin/bash
+# [[doctor]] project — enables the hourly reachability-poll timer (the actual
+# per-host smartctl check is throttled internally to every 7 days, tracked
+# per-machine — see doctor-orchestrator.py). node role only (pramen) — the
+# fleet's one always-on machine, so scheduled runs actually fire reliably.
+# Decided 2026-07-26.
+set -e
+{{ if eq .role "node" -}}
+systemctl --user daemon-reload
+systemctl --user enable --now doctor-check.timer
+{{ end -}}

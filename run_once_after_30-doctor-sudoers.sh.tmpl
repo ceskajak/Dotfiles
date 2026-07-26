@@ -1,0 +1,30 @@
+#!/bin/bash
+# [[doctor]] project — installs smartmontools + a NOPASSWD sudoers rule scoped
+# ONLY to smartctl (read-only diagnostic, cannot modify/delete anything), so
+# doctor-check.py can run unattended. Same pattern as pramen's existing
+# pihole-scoped NOPASSWD rule. Decided 2026-07-26.
+set -e
+
+if ! command -v smartctl >/dev/null 2>&1; then
+{{ if eq .chezmoi.osRelease.id "fedora" -}}
+  sudo dnf install -y smartmontools
+{{ else -}}
+  sudo apt-get update && sudo apt-get install -y smartmontools
+{{ end -}}
+fi
+
+SMARTCTL_PATH="$(command -v smartctl)"
+SUDOERS_FILE=/etc/sudoers.d/030_doctor-smartctl
+TMPFILE="$(mktemp)"
+echo "jakub ALL=(root) NOPASSWD: ${SMARTCTL_PATH} *" > "$TMPFILE"
+
+# Never install an unvalidated sudoers file — a bad one can lock out all sudo.
+if sudo visudo -c -f "$TMPFILE"; then
+  sudo install -m 0440 "$TMPFILE" "$SUDOERS_FILE"
+  echo "doctor: installed NOPASSWD rule for $SMARTCTL_PATH"
+else
+  echo "doctor: generated sudoers file failed validation, NOT installed" >&2
+  rm -f "$TMPFILE"
+  exit 1
+fi
+rm -f "$TMPFILE"
