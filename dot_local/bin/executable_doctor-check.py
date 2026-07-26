@@ -15,7 +15,12 @@ def run(cmd):
 
 def list_disks():
     out = run(["lsblk", "-d", "-n", "-o", "NAME,TYPE"]).stdout
-    return [line.split()[0] for line in out.splitlines() if line.split()[1] == "disk"]
+    skip_prefixes = ("zram", "loop", "sr")
+    return [
+        parts[0] for line in out.splitlines()
+        if (parts := line.split()) and len(parts) >= 2 and parts[1] == "disk"
+        and not parts[0].startswith(skip_prefixes)
+    ]
 
 
 def parse_smart(dev, text):
@@ -41,16 +46,35 @@ def parse_smart(dev, text):
             mm = re.search(pattern, text, re.MULTILINE)
             info[key] = int(mm.group(1).replace(",", "")) if mm else None
     else:
-        for key, pattern in [
-            ("power_on_hours", r"^\s*9 Power_On_Hours.*?(\d+)$"),
-            ("reallocated_sectors", r"^\s*5 Reallocated_Sector_Ct.*?(\d+)$"),
-            ("pending_sectors", r"^\s*197 Current_Pending_Sector.*?(\d+)$"),
-            ("uncorrectable", r"^\s*(?:198 Offline_Uncorrectable|187 Reported_Uncorrect).*?(\d+)$"),
-            ("temperature_c", r"^\s*19[04] (?:Airflow_)?Temperature_Cel.*?\s(\d+)\s*\("),
-            ("ssd_life_left_pct", r"^\s*231 SSD_Life_Left.*?\s(\d+)\s+\d+\s+\d+\s+\w"),
-        ]:
-            mm = re.search(pattern, text, re.MULTILINE)
-            info[key] = int(mm.group(1)) if mm else None
+        def sata_attr_raw_int(attr_name_pattern):
+            """Find a SMART attribute line by name, extract the leading integer
+            from its RAW_VALUE (last column) — robust to non-plain-integer raw
+            formats like '5849h+00m+00.000s' or '48 (Min/Max 32/37)'."""
+            m = re.search(rf"^\s*\d+\s+{attr_name_pattern}\s.*$", text, re.MULTILINE)
+            if not m:
+                return None
+            tokens = m.group(0).split()
+            # temperature-style lines have trailing "(0 32 0 0 0)" detail —
+            # the real current value is the token right before the first "("
+            paren_idx = next((i for i, t in enumerate(tokens) if t.startswith("(")), None)
+            raw = tokens[paren_idx - 1] if paren_idx else tokens[-1]
+            mm = re.match(r"^(\d+)", raw)
+            return int(mm.group(1)) if mm else None
+
+        def sata_attr_normalized_value(attr_name_pattern):
+            """For wear-style attributes, the vendor RAW_VALUE encoding varies
+            and isn't a simple percentage — the normalized VALUE column (3rd
+            field after id/name/flag) is the standardized 0-100 'health left'
+            score and is what's actually meaningful here."""
+            m = re.search(rf"^\s*\d+\s+{attr_name_pattern}\s+\S+\s+(\d+)", text, re.MULTILINE)
+            return int(m.group(1)) if m else None
+
+        info["power_on_hours"] = sata_attr_raw_int("Power_On_Hours")
+        info["reallocated_sectors"] = sata_attr_raw_int("Reallocated_Sector_Ct")
+        info["pending_sectors"] = sata_attr_raw_int("Current_Pending_Sector")
+        info["uncorrectable"] = sata_attr_raw_int("Offline_Uncorrectable") or sata_attr_raw_int("Reported_Uncorrect")
+        info["temperature_c"] = sata_attr_raw_int("Temperature_Celsius") or sata_attr_raw_int("Airflow_Temperature_Cel")
+        info["ssd_life_left_pct"] = sata_attr_normalized_value("SSD_Life_Left")
 
     # anomaly flags — kept simple and conservative, meant to highlight, not diagnose
     anomalies = []
