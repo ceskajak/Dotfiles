@@ -4,13 +4,23 @@
 # doctor-check.py can run unattended. Same pattern as pramen's existing
 # pihole-scoped NOPASSWD rule. Decided 2026-07-26.
 set -e
+export PATH="/usr/sbin:/usr/local/sbin:$PATH"  # smartctl lives in sbin, not always on a non-interactive SSH PATH
 
 if ! command -v smartctl >/dev/null 2>&1; then
 {{ if eq .chezmoi.osRelease.id "fedora" -}}
   sudo dnf install -y smartmontools
 {{ else -}}
-  sudo apt-get update && sudo apt-get install -y smartmontools
+  sudo apt-get update
+  # apt/dpkg postinst hooks (e.g. deb-systemd-invoke under some restricted
+  # shells) can return non-zero even when the package installs fine — don't
+  # let that abort the script via set -e; check the real outcome below instead.
+  sudo apt-get install -y smartmontools || true
 {{ end -}}
+fi
+
+if ! command -v smartctl >/dev/null 2>&1; then
+  echo "doctor: smartctl still not found after install attempt — aborting" >&2
+  exit 1
 fi
 
 SMARTCTL_PATH="$(command -v smartctl)"
