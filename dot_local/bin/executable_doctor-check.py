@@ -4,6 +4,7 @@ Part of the [[doctor]] project. Requires the smartctl NOPASSWD sudoers rule
 (run_once_after_30-doctor-sudoers.sh.tmpl) to run without a password prompt.
 """
 import json
+import os
 import re
 import subprocess
 import sys
@@ -11,6 +12,21 @@ import sys
 
 def run(cmd):
     return subprocess.run(cmd, capture_output=True, text=True, timeout=30)
+
+
+def find_smartctl():
+    # sudo matches NOPASSWD rules against the exact path installed in the
+    # sudoers file (an absolute path) — invoking a bare "smartctl" and
+    # relying on sudo's own secure_path to resolve it does NOT reliably
+    # match that rule in practice (confirmed empirically on rybnik), so
+    # resolve the absolute path ourselves before ever calling sudo.
+    for candidate in ("/usr/sbin/smartctl", "/usr/bin/smartctl", "/usr/local/sbin/smartctl"):
+        if os.path.exists(candidate):
+            return candidate
+    return "smartctl"  # last resort, will likely hit the password prompt
+
+
+SMARTCTL = find_smartctl()
 
 
 def list_disks():
@@ -106,10 +122,10 @@ def parse_smart(dev, text):
 
 def check_disk(dev):
     path = f"/dev/{dev}"
-    r = run(["sudo", "-n", "smartctl", "-a", path])
+    r = run(["sudo", "-n", SMARTCTL, "-a", path])
     if r.returncode not in (0, 4) or "Permission denied" in r.stderr:
         # try SAT passthrough for USB-bridged drives
-        r2 = run(["sudo", "-n", "smartctl", "-a", "-d", "sat", path])
+        r2 = run(["sudo", "-n", SMARTCTL, "-a", "-d", "sat", path])
         if r2.returncode in (0, 4):
             r = r2
     if "Permission denied" in r.stdout + r.stderr:
