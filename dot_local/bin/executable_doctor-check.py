@@ -114,6 +114,11 @@ def check_disk(dev):
             r = r2
     if "Permission denied" in r.stdout + r.stderr:
         return {"device": dev, "raw_ok": False, "error": "sudo permission denied — NOPASSWD rule missing?"}
+    if "Unable to detect device type" in r.stdout:
+        # SD/eMMC cards etc — most don't expose SMART at all, this isn't an
+        # anomaly, just a device class smartctl can't talk to.
+        return {"device": dev, "raw_ok": True, "health": "NOT_SUPPORTED",
+                "model": "unknown", "anomalies": []}
     if not r.stdout.strip():
         return {"device": dev, "raw_ok": False, "error": r.stderr.strip() or "empty smartctl output"}
     return parse_smart(dev, r.stdout)
