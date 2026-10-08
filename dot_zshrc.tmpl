@@ -22,6 +22,18 @@ source $ZSH/oh-my-zsh.sh
 # user binaries on PATH — all machines
 export PATH="$HOME/.local/bin:$PATH"
 
+# ls colours — fixed Catppuccin Macchiato truecolor values (terminal-agnostic)
+_ls_arch=237\;135\;150 _ls_img=198\;160\;246 _ls_media=139\;213\;202
+LS_COLORS="di=1;38;2;138;173;244:ln=38;2;245;189;230:or=1;38;2;237;135;150:mi=1;38;2;237;135;150"
+LS_COLORS+=":ex=1;38;2;166;218;149:pi=38;2;238;212;159:so=38;2;245;189;230:bd=38;2;238;212;159:cd=38;2;238;212;159"
+LS_COLORS+=":su=38;2;36;39;58;48;2;237;135;150:sg=38;2;36;39;58;48;2;237;135;150"
+LS_COLORS+=":tw=38;2;36;39;58;48;2;166;218;149:ow=38;2;36;39;58;48;2;166;218;149:st=38;2;36;39;58;48;2;138;173;244"
+for e in tar tgz gz xz bz2 zip 7z zst rar; do LS_COLORS+=":*.$e=38;2;$_ls_arch"; done
+for e in png jpg jpeg gif svg webp; do LS_COLORS+=":*.$e=38;2;$_ls_img"; done
+for e in mp3 flac ogg wav mp4 mkv webm; do LS_COLORS+=":*.$e=38;2;$_ls_media"; done
+export LS_COLORS
+unset _ls_arch _ls_img _ls_media e
+
 # default editor — resolved to the real binary (not just an alias) so
 # non-interactive invocations (git, sudoedit, systemctl edit, ...) get the
 # right one too; aliases only apply in interactive shells.
