@@ -1,0 +1,9 @@
+#!/bin/bash
+# Ptyxis terminal palette — fleet theme, Catppuccin Macchiato (bundled with
+# Ptyxis). wm=gnome only. The default profile's UUID differs per host, so it
+# is read at runtime.
+set -e
+{{ if eq .wm "gnome" -}}
+uuid="$(gsettings get org.gnome.Ptyxis default-profile-uuid | tr -d "'")"
+gsettings set "org.gnome.Ptyxis.Profile:/org/gnome/Ptyxis/Profiles/$uuid/" palette 'Catppuccin Macchiato'
+{{ end -}}
