@@ -12,8 +12,6 @@ ENABLED=(
   openbar@neuromorph
   o-tiling@oliwebd.github.com
   blur-my-shell@aunetx
-  sound-output-device-chooser@kgshank.net
-  Current_screen_only_for_Alternate_Tab@bourcereau.fr
   user-theme@gnome-shell-extensions.gcampax.github.com
   launch-new-instance@gnome-shell-extensions.gcampax.github.com
 )
@@ -30,6 +28,17 @@ for uuid in "${ENABLED[@]}"; do
   gnome-extensions install --force "$zip"
   rm -f "$zip"
 done
+
+# openbar's newest release only declares Shell <=49; forced on 50 by user
+# decision 2026-10-08 (per-extension metadata edit, version check stays on).
+python3 - "$HOME/.local/share/gnome-shell/extensions/openbar@neuromorph/metadata.json" "$SHELL_MAJOR" <<'PY'
+import json, sys
+path, major = sys.argv[1], sys.argv[2]
+d = json.load(open(path))
+if major not in d["shell-version"]:
+    d["shell-version"].append(major)
+    json.dump(d, open(path, "w"), indent=2)
+PY
 
 list=""
 for uuid in "${ENABLED[@]}"; do list="$list'$uuid', "; done
