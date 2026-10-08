@@ -1,0 +1,28 @@
+#!/bin/bash
+# GNOME keyboard binds — shared set for GNOME hosts (ocean, akvarium); wm=gnome
+# only. Loads only the keys listed, so host-specific extras are left alone.
+# Terminal binary differs per host: ptyxis (ocean), gnome-terminal (akvarium).
+set -e
+{{ if eq .wm "gnome" -}}
+dconf load / <<'EOF'
+[org/gnome/settings-daemon/plugins/media-keys]
+custom-keybindings=['/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/']
+
+[org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0]
+binding='<Control><Alt>t'
+command='{{ if eq .chezmoi.hostname "akvarium" }}gnome-terminal{{ else }}ptyxis --new-window{{ end }}'
+name='Open Terminal'
+
+[org/gnome/desktop/wm/keybindings]
+minimize=@as []
+move-to-monitor-down=@as []
+move-to-monitor-up=@as []
+switch-to-workspace-left=['<Super>Page_Up', '<Super>KP_Prior', '<Control><Alt>Left']
+switch-to-workspace-right=['<Super>Page_Down', '<Super>KP_Next', '<Control><Alt>Right']
+
+[org/gnome/shell/keybindings]
+shift-overview-down=@as []
+shift-overview-up=@as []
+toggle-quick-settings=@as []
+EOF
+{{ end -}}
