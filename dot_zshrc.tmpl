@@ -3,12 +3,13 @@
 #
 # NOTE (2026-10-08): fast-syntax-highlighting is the fleet's one highlighter,
 # themed with upstream Catppuccin Macchiato (dot_config/fsh/, activated by
-# run_onchange_after_29-fsh-theme.sh.tmpl). ZSH_THEME (the prompt) stays
-# "fishy" — confirmed, not drift; minimal was considered and declined.
+# run_onchange_after_29-fsh-theme.sh.tmpl). The prompt is "fishy-macchiato"
+# (dot_oh-my-zsh/custom/themes): fishy's layout, fixed Macchiato hex colours so
+# it is terminal-agnostic. Layout confirmed (minimal was considered, declined).
 # Plugins are runtime-guarded so a missing one is skipped instead of erroring.
 
 export ZSH="$HOME/.oh-my-zsh"
-ZSH_THEME="fishy"
+ZSH_THEME="fishy-macchiato"
 
 # plugins — start minimal, append only the custom ones actually installed
 plugins=(git{{ if eq .chezmoi.osRelease.id "fedora" }} dnf{{ end }})
