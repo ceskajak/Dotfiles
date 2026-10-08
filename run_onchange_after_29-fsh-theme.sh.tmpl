@@ -1,0 +1,11 @@
+#!/bin/bash
+# fast-syntax-highlighting — the fleet's one syntax highlighter. Installs the
+# plugin if missing and activates the upstream Catppuccin Macchiato theme
+# (dot_config/fsh/catppuccin-macchiato.ini). Re-runs when the theme file changes.
+# theme hash: {{ include "dot_config/fsh/catppuccin-macchiato.ini" | sha256sum }}
+set -e
+FSH="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/fast-syntax-highlighting"
+if [ ! -d "$FSH" ]; then
+  git clone -q --depth 1 https://github.com/zdharma-continuum/fast-syntax-highlighting "$FSH"
+fi
+zsh "$FSH/fast-theme" XDG:catppuccin-macchiato
