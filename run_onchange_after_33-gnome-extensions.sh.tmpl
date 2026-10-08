@@ -1,0 +1,37 @@
+#!/bin/bash
+# GNOME extensions — one set for every GNOME host (ocean, akvarium); wm=gnome
+# only. Missing extensions are fetched from extensions.gnome.org (the official
+# source) for the running Shell version; Fedora-packaged ones are used as-is.
+# apps-menu / places-menu stay installed (RPM) but deliberately disabled.
+# Re-runs when this list changes. New extensions need a re-login to load.
+set -e
+{{ if eq .wm "gnome" -}}
+ENABLED=(
+  background-logo@fedorahosted.org
+  monitor@astraext.github.io
+  openbar@neuromorph
+  o-tiling@oliwebd.github.com
+  blur-my-shell@aunetx
+  sound-output-device-chooser@kgshank.net
+  Current_screen_only_for_Alternate_Tab@bourcereau.fr
+  user-theme@gnome-shell-extensions.gcampax.github.com
+  launch-new-instance@gnome-shell-extensions.gcampax.github.com
+)
+SHELL_MAJOR="$(gnome-shell --version | awk '{print int($3)}')"
+
+for uuid in "${ENABLED[@]}"; do
+  if [ -d "$HOME/.local/share/gnome-shell/extensions/$uuid" ] || [ -d "/usr/share/gnome-shell/extensions/$uuid" ]; then
+    continue
+  fi
+  path="$(curl -fsS "https://extensions.gnome.org/extension-info/?uuid=$uuid&shell_version=$SHELL_MAJOR" \
+    | python3 -c 'import sys,json; print(json.load(sys.stdin)["download_url"])')"
+  zip="$(mktemp --suffix=.zip)"
+  curl -fsSL -o "$zip" "https://extensions.gnome.org$path"
+  gnome-extensions install --force "$zip"
+  rm -f "$zip"
+done
+
+list=""
+for uuid in "${ENABLED[@]}"; do list="$list'$uuid', "; done
+gsettings set org.gnome.shell enabled-extensions "[${list%, }]"
+{{ end -}}
