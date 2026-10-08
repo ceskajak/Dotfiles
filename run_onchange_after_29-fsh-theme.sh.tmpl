@@ -8,4 +8,4 @@ FSH="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/fast-syntax-highlighting"
 if [ ! -d "$FSH" ]; then
   git clone -q --depth 1 https://github.com/zdharma-continuum/fast-syntax-highlighting "$FSH"
 fi
-zsh "$FSH/fast-theme" XDG:catppuccin-macchiato
+zsh -c "source '$FSH/fast-syntax-highlighting.plugin.zsh' && fast-theme XDG:catppuccin-macchiato"
