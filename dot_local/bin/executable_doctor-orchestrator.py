@@ -13,7 +13,7 @@ import json
 import pathlib
 import subprocess
 
-FLEET = ["ocean", "akvarium", "kapka", "rybnik"]  # pramen itself checked locally
+FLEET = ["ocean", "akvarium", "kapka"]  # pramen itself checked locally
 CHECK_INTERVAL_DAYS = 7
 STATE_DIR = pathlib.Path("/home/jakub/doctor/state")
 REPORT_DIR = pathlib.Path("/home/jakub/doctor/reports")
